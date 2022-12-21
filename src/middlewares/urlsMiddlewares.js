@@ -23,7 +23,7 @@ export async function urlByIdParamValidation(req,res,next){
     `,[id])
 
     if (url.rows.length===0){
-        res.sendStatus(404)
+        return res.sendStatus(404)
     }
 
     req.url=url.rows[0]
@@ -44,5 +44,27 @@ export async function openUrlParamValidation(req,res,next){
     }
 
     req.url = url.rows[0]
+    next()
+}
+
+export async function urlOwnerValidation(req,res,next){
+    const {id} = req.params
+    const userId = req.userId
+
+    const url = await connection.query(`
+        SELECT *
+        FROM urls
+        WHERE id = ($1)
+    `,[id])
+
+    if (url.rows.length===0){
+        return res.sendStatus(404)
+    }
+
+    if(url.rows[0].userId!==userId){
+        return res.sendStatus(401)
+    }
+
+    req.url=url.rows[0]
     next()
 }
