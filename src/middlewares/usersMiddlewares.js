@@ -5,7 +5,7 @@ import bcrypt from "bcrypt"
 export async function signUpBodyValidation(req,res,next){
     const body = req.body
 
-    const {error} = signUpSchema.validate(body)
+    const {error} = signUpSchema.validate(body, {abortEarly:false})
     if (error){
         const errors = error.details.map(detail=> detail.message)
         return res.status(422).send(errors)
@@ -26,7 +26,7 @@ export async function signUpBodyValidation(req,res,next){
 export async function signInBodyValidation(req,res,next){
     const body = req.body
 
-    const {error} = signInSchema.validate(body)
+    const {error} = signInSchema.validate(body, {abortEarly:false})
     
     if(error){
         const errors = error.details.map(detail=> detail.message)
