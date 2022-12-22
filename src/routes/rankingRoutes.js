@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { getRanking } from "../controllers/rankingController.js";
 
-const router = Router()
+const router = Router();
 
-router.get('/ranking', getRanking)
+router.get("/ranking", getRanking);
 
-export default router
+export default router;
