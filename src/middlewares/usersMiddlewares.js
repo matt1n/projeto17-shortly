@@ -50,3 +50,20 @@ export async function signInBodyValidation(req,res,next){
     req.user = user.rows[0]
     next()
 }
+
+export async function myUserValidation(req,res,next){
+    const userId = req.userId
+
+    const user = await connection.query(`
+        SELECT *
+        FROM users
+        WHERE id = ($1)
+    `, [userId])
+
+    if(user.rows.length===0){
+        return res.sendStatus(404)
+    }
+    console.log(user.rows)
+
+    next()
+}
