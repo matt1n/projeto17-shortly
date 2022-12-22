@@ -33,8 +33,8 @@ export async function openUrl(req,res){
     const {id, url} = req.url
 
     await connection.query(`
-        INSERT INTO "visitedUrls" ("urlId", "visitDate")
-        VALUES ($1,now())
+        INSERT INTO "visitedUrls" ("urlId")
+        VALUES ($1)
     `,[id])
 
     res.redirect(url)
