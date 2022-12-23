@@ -3,28 +3,28 @@ import { connection } from "../database/database.js";
 export async function getRanking(req, res) {
   try {
     const ranking = await connection.query(`
-        select
-  users.id,
-  users.name,
-  (
-    select
-      cast(count(urls."userId") as integer)
-    from
-      urls
-    where
-      urls."userId" = users.id
-  ) as "linksCount",
-  cast(count("visitedUrls"."urlId") as integer) as "visitCount"
-from
-  users
-  left join urls on users.id = urls."userId"
-  left join "visitedUrls" on urls.id = "visitedUrls"."urlId"
-group by
-  users.id
-order by
-  "visitCount"desc , "linksCount" desc
-limit
-  10
+    SELECT
+      users.id,
+      users.name,
+      (
+        SELECT
+          CAST(COUNT(urls."userId") AS INTEGER)
+        FROM
+          urls
+        WHERE
+          urls."userId" = users.id
+      ) AS "linksCount",
+      CAST(COUNT("visitedUrls"."urlId") AS INTEGER) AS "visitCount"
+    FROM
+      users
+      LEFT JOIN urls ON users.id = urls."userId"
+      LEFT JOIN "visitedUrls" ON urls.id = "visitedUrls"."urlId"
+    GROUP BY
+      users.id
+    ORDER BY
+      "visitCount"DESC , "linksCount" DESC
+    LIMIT
+      10
   
         `);
     res.status(200).send(ranking.rows);

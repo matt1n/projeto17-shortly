@@ -47,36 +47,37 @@ export async function getMyUser(req, res) {
   try {
     const user = await connection.query(
       `
-        select
-          users.id,
-          users.name,
-          cast(count(urls."userId") as integer) as "visitCount",
+      SELECT
+      users.id,
+      users.name,
+      CAST(COUNT("visitedUrls"."id") AS INTEGER) AS "visitCount",
+      (
+        SELECT
+          JSON_AGG(s)
+        FROM
           (
-            select
-              json_agg(s)
-            from
-              (
-                select
-                  urls.id,
-                  urls."shortUrl",
-                  urls.url,
-                  count("visitedUrls"."urlId") as "visitCount"
-                from
-                  urls
-                where
-                  urls."userId" = users.id
-                group by
-                  urls.id
-              ) s
-          ) as "shortenedUrls"
-        from
-          users
-          left join urls on users.id = urls."userId"
-          left join "visitedUrls" on urls.id = "visitedUrls"."urlId"
-        where
-          users.id = ($1)
-        group by
-          users.id
+            SELECT
+              urls.id,
+              urls."shortUrl",
+              urls.url,
+              COUNT("visitedUrls"."urlId") AS "visitCount"
+            FROM
+              urls
+              LEFT JOIN "visitedUrls" on urls.id = "visitedUrls"."urlId"
+            WHERE
+              urls."userId" = users.id
+            GROUP BY
+              urls.id
+          ) s
+      ) AS "shortenedUrls"
+    FROM
+      users
+      LEFT JOIN urls on users.id = urls."userId"
+      LEFT JOIN "visitedUrls" on urls.id = "visitedUrls"."urlId"
+    WHERE
+      users.id = ($1)
+    GROUP BY
+      users.id
         `,
       [userId]
     );
